@@ -13,5 +13,5 @@
 
 ## Platform
 
-* Written in [.NET Core 2.0.0](https://github.com/dotnet/core/blob/master/release-notes/2.0/2.0.0.md)
+* Written in [.NET Core 3.1](https://github.com/dotnet/core/tree/main/release-notes/3.1)
 * Only support Microsoft SQL 2012+ as of now
