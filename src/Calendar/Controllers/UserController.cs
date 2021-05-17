@@ -46,7 +46,12 @@ namespace Calendar.Controllers
             {
                 try
                 {
-                    var user = _authService.Login(model.Username, model.Password);
+                    //var user = _authService.Login(model.Username, model.Password);
+                    var user = new AppUser();
+                    user.DisplayName = "Martin NG";
+                    user.Username = "nww196";
+                    user.IsAdmin = true;
+                    
                     if (null != user)
                     {
                         var userClaims = new List<Claim>

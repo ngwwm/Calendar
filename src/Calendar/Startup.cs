@@ -59,7 +59,8 @@ namespace Calendar
             // Add framework services.
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-
+            /* services.AddDatabaseDeveloperPageExceptionFilter();*/
+            services.AddDatabaseDeveloperPageExceptionFilter();
             /* This service is added when you create the project with "Authentiation: Individual User Accounts" */
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -119,6 +120,7 @@ namespace Calendar
             /* .netcore 3.0 end */
 
             // Add application services.
+
             /* Statistics on Events by Team/Project used in the navigation menu in LHS. */
             services.AddTransient<Calendar.Models.Services.EventStatisticsService>();     
             /* Provides LOV/constants type of things */  
@@ -127,6 +129,7 @@ namespace Calendar
             services.AddTransient<Calendar.Controllers.ProjectsController>();
             /* Expose the Team List */
             services.AddTransient<Calendar.Controllers.TeamsController>();
+
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
             /* Ldap Auth */
@@ -154,7 +157,11 @@ namespace Calendar
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseMigrationsEndPoint();
+                /* begin .net5 
+                app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
+                .net5 end*/
                 /* begin .netcore 2.1
                 app.UseBrowserLink();
                    .netcore 2.1 end */
