@@ -9,6 +9,7 @@ using Calendar.Data;
 using Calendar.Models;
 using Calendar.Models.CalendarViewModels;
 using Calendar.Helpers;
+using Calendar.Models.Services;
 
 namespace Calendar.Controllers
 {
@@ -39,10 +40,10 @@ namespace Calendar.Controllers
             ViewBag.EventParm = String.IsNullOrEmpty(eventid) ? "" : eventid;
             ViewBag.FromParm = String.IsNullOrEmpty(searchdatefrom) ? "" : searchdatefrom;
             ViewBag.ToParm = String.IsNullOrEmpty(searchdateto) ? "" : searchdateto;
-            
-            if (String.IsNullOrEmpty(eventid) && String.IsNullOrEmpty(subject) 
-                && String.IsNullOrEmpty(host) && String.IsNullOrEmpty(project) 
-                && String.IsNullOrEmpty(team) && String.IsNullOrEmpty(refid) 
+
+            if (String.IsNullOrEmpty(eventid) && String.IsNullOrEmpty(subject)
+                && String.IsNullOrEmpty(host) && String.IsNullOrEmpty(project)
+                && String.IsNullOrEmpty(team) && String.IsNullOrEmpty(refid)
                 && (String.IsNullOrEmpty(searchday) || searchday.Equals("ND")))
             {
                 ViewBag.SearchOn = "";
@@ -52,9 +53,9 @@ namespace Calendar.Controllers
             }
 
             var events = from e in _context.Event
-                           select e;
+                         select e;
 
-            int n_eventid;          
+            int n_eventid;
             if (!String.IsNullOrEmpty(eventid) && Int32.TryParse(eventid, out n_eventid))
             {
                 events = events.Where(e => e.ID.Equals(n_eventid));
@@ -98,7 +99,7 @@ namespace Calendar.Controllers
                         events = events.Where(e => e.EndDateTime <= datetimeto);
                     }
                 }
-                else if(searchday.Equals("CD"))
+                else if (searchday.Equals("CD"))
                 {
                     if (!String.IsNullOrEmpty(searchdatefrom) && DateTime.TryParse(searchdatefrom, out datetimefrom))
                     {
@@ -122,7 +123,7 @@ namespace Calendar.Controllers
                 }
             }
             else
-            {                
+            {
                 switch (searchrange)
                 {
                     case "S1":
@@ -187,12 +188,26 @@ namespace Calendar.Controllers
                     events = events.OrderByDescending(e => e.StartDateTime);
                     break;
             }
-            
-            var viewModel = new EventIndexData();
-            viewModel.Events = events
+
+            var viewModel = new EventIndexData {
+                Events = events
                   .Include(e => e.Acknowledgements)
-                  .AsNoTracking();
-            
+                  .AsNoTracking(),
+                SearchSort = sort,
+                SearchEventID = eventid,
+                SearchByRange = searchrange,
+                SearchByDate = searchday,
+                SearchByRangeList = new SelectList(StaticListOfValuesService.ListSearchRange()),
+                SearchByDateList = new SelectList(StaticListOfValuesService.ListSearchDate()),
+                SearchSubject = subject,
+                SearchHost = host,
+                SearchTeam = team,
+                SearchProject = project,
+                SearchFromDate = searchdatefrom,
+                SearchToDate = searchdateto,
+                SearchReference = refid,
+
+        };
             return View(new PaginatedEventIndex(viewModel, page ?? 1, pgsize ?? 30));
 
             //return View(await PaginatedList<Event>.CreateAsync(events.AsNoTracking(), page ?? 1, pgsize ?? 30));
@@ -334,22 +349,33 @@ namespace Calendar.Controllers
         }
 
         // GET: Events/Create
-        public IActionResult Create(string redir = null, string date = null)
+        public async Task<IActionResult> Create(string redir = null, string date = null)
         {
             ViewBag.Title = "Create Event";
             ViewBag.Redir = redir;
 
             if (User.IsInRole(Constants.ROLE_ADMIN))
-            {                
+            {
+                var viewModel = new EventViewModel
+                {
+                    E = new Event(),
+                    EventStatus = new SelectList(StaticListOfValuesService.ListEventStatus(), "Value", "Name"),
+                    Likelihoods = new SelectList(StaticListOfValuesService.ListLikelihoods(), "Value", "Name"),
+                    RiskLevels = new SelectList(StaticListOfValuesService.ListRiskLevels(), "Value", "Name"),
+                    RiskLevelMatrix = new SelectList(StaticListOfValuesService.ListRiskLevels(), "Value", "Name"),
+                    Impacts = new SelectList(StaticListOfValuesService.ListImpacts(), "Value", "Name"),
+                    Environments = new SelectList(StaticListOfValuesService.ListEnvironments(), "Value", "Name")
+                };
                 if (date != null && date != "")
                 {
-                    Event e = new Event();
+                    viewModel.E.StartDateTime = DateTime.ParseExact(date, "d/m/yyyy", null);
+                    viewModel.E.EndDateTime = viewModel.E.StartDateTime.AddHours(12);
+                }
 
-                    e.StartDateTime = DateTime.ParseExact(date, "d/m/yyyy", null);
-                    e.EndDateTime = e.StartDateTime.AddHours(12);
-                    return View(e);
-                } else
-                    return View();
+                viewModel.Teams = new SelectList(await _context.Team.ToListAsync(), "ID", "Name");
+                viewModel.Projects = new SelectList(await _context.Project.ToListAsync(), "ID", "Name");
+
+                return View(viewModel);
             }
             else
                 return NotFound();
@@ -423,12 +449,27 @@ namespace Calendar.Controllers
             }
 
             var @event = await _context.Event.SingleOrDefaultAsync(m => m.ID == id);
+
             if (@event == null)
             {
                 return NotFound();
             }
+            var viewModel = new EventViewModel
+            {
+                E = @event,
+                EventStatus = new SelectList(StaticListOfValuesService.ListEventStatus(), "Value", "Name"),
+                Likelihoods = new SelectList(StaticListOfValuesService.ListLikelihoods(), "Value", "Name"),
+                RiskLevels = new SelectList(StaticListOfValuesService.ListRiskLevels(), "Value", "Name"),
+                RiskLevelMatrix = new SelectList(StaticListOfValuesService.ListRiskLevels(), "Value", "Name"),
+                Impacts = new SelectList(StaticListOfValuesService.ListImpacts(), "Value", "Name"),
+                Environments = new SelectList(StaticListOfValuesService.ListEnvironments(), "Value", "Name")
+            };
+
+            viewModel.Teams = new SelectList(await _context.Team.ToListAsync(), "ID", "Name");
+            viewModel.Projects = new SelectList(await _context.Project.ToListAsync(), "ID", "Name");
+
             ViewBag.Redir = redir;
-            return View(@event);
+            return View(viewModel);
         }
 
         // POST: Events/Edit/5

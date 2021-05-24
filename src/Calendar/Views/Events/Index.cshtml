@@ -1,6 +1,7 @@
 @using Microsoft.AspNetCore.Authorization;
 @using System.Security.Claims;
 @using Calendar.Helpers;
+@using Calendar.Models.Services; 
 
 @*
     @model IEnumerable<Calendar.Models.Event>
@@ -11,13 +12,14 @@
 
 @model PaginatedEventIndex
 
-@inject Calendar.Models.Services.StaticListOfValuesService LOVs
+@*inject Calendar.Models.Services.StaticListOfValuesService LOVs*@
+
 @inject Calendar.Controllers.AppSettingsController appsettings
 
 @{
     ViewData["Title"] = "Event List";
 
-    var redir = Uri.UnescapeDataString(@Context.Request.PathBase + "/Events?sort=" + @ViewBag.SortParm + "&eventid=" + ViewBag.EventParm + "&subject=" + ViewBag.SubjectParm + "&host=" + ViewBag.HostParm + "&project=" + ViewBag.ProjParm + "&team=" + ViewBag.TeamParm + "&searchday=" + ViewBag.DayParm + "&searchrange=" + ViewBag.RangeParm + "&searchdatefrom=" + ViewBag.FromParm + "&searchdateto=" + ViewBag.ToParm + "&page=" + @Model.PageIndex + "&pgsize=" + @Model.PageSize);
+    var redir = Uri.UnescapeDataString(@Context.Request.PathBase + "/Events?sort=" + @Model.SearchSort + "&eventid=" + @Model.SearchEventID + "&subject=" + @Model.SearchSubject + "&host=" + @Model.SearchHost + "&project=" + @Model.SearchProject + "&team=" + @Model.SearchTeam + "&searchday=" + @Model.SearchByDate + "&searchrange=" + @Model.SearchByRange + "&searchdatefrom=" + @Model.SearchFromDate + "&searchdateto=" + @Model.SearchToDate + "&page=" + @Model.PageIndex + "&pgsize=" + @Model.PageSize);
 }
 
 
@@ -126,19 +128,8 @@
                             <div class="row">
                                 <label class="col-md-3 control-label input-sm text-nowrap">By Date</label>
                                 <div class="col-md-9">
-                                    <select name="searchday" id="searchday" class="form-control input-sm">
-                                        @foreach (var s in LOVs.ListSearchDate())
-                                        {
-                                            @if (ViewBag.DayParm == s.Value)
-                                            {
-                                                <option value=@s.Value selected>@s.Name</option>
-                                            }
-                                            else
-                                            {
-                                                <option value=@s.Value>@s.Name</option>
-                                            }
-
-                                        }
+                                    <select asp-for="SearchByDateList" asp-items="Model.SearchByDateList" class="form-control">
+                                        <option></option>
                                     </select>
                                 </div>
                             </div>
@@ -147,19 +138,14 @@
                         <div class="col-md-2">
                             <div class="row">
                                 <div class="col-md-12">
-                                    <select name="searchrange" id="searchrange" class="form-control input-sm">
-                                        @foreach (var s in LOVs.ListSearchRange())
-                                        {
-                                            @if (ViewBag.RangeParm == s.Value)
-                                            {
-                                                <option value=@s.Value data-filter=@s.Filter selected>@s.Name</option>
-                                            }
-                                            else
-                                            {
-                                                <option value=@s.Value data-filter=@s.Filter>@s.Name</option>
-                                            }
-                                        }
-                                    </select>
+                                  
+                                        <select asp-for="SearchByRangeList" asp-items="Model.SearchByRangeList" class="form-control">
+                                            <option value="">All</option>
+                                        </select>
+
+
+                                        
+                                    
                                 </div>
                             </div>
                         </div>
@@ -404,7 +390,7 @@
             <td>
                 @{
                     // It wounld be better to do it using CalendarEventViewModel
-                    var s = LOVs.ListEventStatus().Where(m => m.Value == item.EventStatus);                    
+                    var s = StaticListOfValuesService.ListEventStatus().Where(m => m.Value == item.EventStatus);
                     @if (s.Count() == 1)
                     {
                         @Html.DisplayFor(modelItem => s.First().Name);

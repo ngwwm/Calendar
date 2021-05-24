@@ -1,10 +1,13 @@
 @using Calendar.Helpers
+@using Calendar.Models.Services;
+@model Calendar.Models.EventViewModel
 
-@model Calendar.Models.Event
+@*inject Calendar.Models.Services.StaticListOfValuesService LOVs*@
+@*
+    @inject Calendar.Controllers.TeamsController Teams
+    @inject Calendar.Controllers.ProjectsController Projects
+*@
 
-@inject Calendar.Models.Services.StaticListOfValuesService LOVs
-@inject Calendar.Controllers.TeamsController Teams
-@inject Calendar.Controllers.ProjectsController Projects
 @inject Calendar.Controllers.AppSettingsController appsettings
 
 @{
@@ -18,30 +21,31 @@
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group">
-            <label asp-for="Subject" class="col-md-2 control-label" data-toggle="tooltip" data-placement="top" data-html="true" title="@Constants.TIP_SUBJECT"></label> 
+            <label asp-for="E.Subject" class="col-md-2 control-label" data-toggle="tooltip" data-placement="top" data-html="true" title="@Constants.TIP_SUBJECT"></label>
             <div class="col-md-10">
-                <input asp-for="Subject" class="form-control" />
-                <span asp-validation-for="Subject" class="text-danger" />
+                <input asp-for="E.Subject" class="form-control" />
+                <span asp-validation-for="E.Subject" class="text-danger" />
             </div>
         </div>
-        <div class="form-group">                       
-            <label asp-for="TaskDescription" class="col-md-2 control-label" data-toggle="tooltip" data-placement="top" data-html="true" title="@Constants.TIP_SHORTDESC"></label>
+        <div class="form-group">
+            <label asp-for="E.TaskDescription" class="col-md-2 control-label" data-toggle="tooltip" data-placement="top" data-html="true" title="@Constants.TIP_SHORTDESC"></label>
             <div class="col-md-10">
-                <input asp-for="TaskDescription" class="form-control" />
-                <span asp-validation-for="TaskDescription" class="text-danger" />
+                <input asp-for="E.TaskDescription" class="form-control" />
+                <span asp-validation-for="E.TaskDescription" class="text-danger" />
             </div>
         </div>
 
         <div class="form-group">
-            <label asp-for="StartDateTime" class="col-md-2 control-label"></label>
+            <label asp-for="E.StartDateTime" class="col-md-2 control-label"></label>
             <div class="col-md-4">
                 <div class='input-group date' id='dtpickerStart'>
-                    @if (ViewData["Title"].ToString().Equals("Copy Event")) { 
-                    <input asp-for="StartDateTime" class="form-control" type="text" value=""/>
+                    @if (ViewData["Title"].ToString().Equals("Copy Event"))
+                    {
+                        <input asp-for="E.StartDateTime" class="form-control" type="text" value="" />
                     }
                     else
                     {
-                        <input asp-for="StartDateTime" class="form-control" type="text" />
+                        <input asp-for="E.StartDateTime" class="form-control" type="text" />
                     }
                     <span class="input-group-addon">
                         <span class="glyphicon glyphicon-calendar"></span>
@@ -55,18 +59,18 @@
                         });
                     });
                 </script>
-                <span asp-validation-for="StartDateTime" class="text-danger"></span>
+                <span asp-validation-for="E.StartDateTime" class="text-danger"></span>
             </div>
-            <label asp-for="EndDateTime" class="col-md-2 control-label"></label>
+            <label asp-for="E.EndDateTime" class="col-md-2 control-label"></label>
             <div class="col-md-4">
                 <div class='input-group date' id='dtpickerEnd'>
                     @if (ViewData["Title"].ToString().Equals("Copy Event"))
                     {
-                        <input asp-for="EndDateTime" class="form-control" type="text" value="" />
+                        <input asp-for="E.EndDateTime" class="form-control" type="text" value="" />
                     }
                     else
                     {
-                        <input asp-for="EndDateTime" class="form-control" type="text" />
+                        <input asp-for="E.EndDateTime" class="form-control" type="text" />
                     }
                     <span class="input-group-addon">
                         <span class="glyphicon glyphicon-calendar"></span>
@@ -80,169 +84,149 @@
                         });
                     });
                 </script>
-                <span asp-validation-for="EndDateTime" class="text-danger"></span>
+                <span asp-validation-for="E.EndDateTime" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="EventStatus" class="col-md-2 control-label"></label>
+            <label asp-for="E.EventStatus" class="col-md-2 control-label"></label>
             <div class="col-md-4">
-                <select asp-for="EventStatus" class="form-control">
+                <select asp-for="E.EventStatus" asp-items="Model.EventStatus" class="form-control">
                     <option></option>
-                    @foreach (var s in LOVs.ListEventStatus())
-                    {
-                        <option value=@s.Value>@s.Name</option>
-                    }
                 </select>
-                <span asp-validation-for="EventStatus" class="text-danger" />
+                <span asp-validation-for="E.EventStatus" class="text-danger" />
             </div>
-            <label asp-for="Reference" class="col-md-2 control-label"  data-toggle="tooltip" data-placement="top" data-html="true" title="@Constants.TIP_REFERENCE"></label>
+            <label asp-for="E.Reference" class="col-md-2 control-label" data-toggle="tooltip" data-placement="top" data-html="true" title="@Constants.TIP_REFERENCE"></label>
             <div class="col-md-4">
-                <input asp-for="Reference" class="form-control" />
-                <span asp-validation-for="Reference" class="text-danger" />
+                <input asp-for="E.Reference" class="form-control" />
+                <span asp-validation-for="E.Reference" class="text-danger" />
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="AffectedHosts" class="col-md-2 control-label">
+            <label asp-for="E.AffectedHosts" class="col-md-2 control-label">
                 Hosts<span role="button" class='glyphicon glyphicon-flash' style='color:red' title='Perform Impact Analysis' onclick="doIA('@appsettings.IA_Url', 'hosts')"></span>
             </label>
             <div class="col-md-10">
-                <input asp-for="AffectedHosts" class="form-control" data-role="tagsinput" />
-                <span asp-validation-for="AffectedHosts" class="text-danger" />
+                <input asp-for="E.AffectedHosts" class="form-control" data-role="tagsinput" />
+                <span asp-validation-for="E.AffectedHosts" class="text-danger" />
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="AffectedProjects" class="col-md-2 control-label">
+            <label asp-for="E.AffectedProjects" class="col-md-2 control-label">
                 Projects<span role="button" class='glyphicon glyphicon-flash' style='color:red' title='Perform Impact Analysis' onclick="doIA('@appsettings.IA_Url', 'projects')"></span>
             </label>
             <div class="col-md-10">
-                <input asp-for="AffectedProjects" class="form-control" data-role="tagsinput" />
-                <span asp-validation-for="AffectedProjects" class="text-danger" />
+                <input asp-for="E.AffectedProjects" class="form-control" data-role="tagsinput" />
+                <span asp-validation-for="E.AffectedProjects" class="text-danger" />
             </div>
         </div>
 
         <div class="form-group">
-            <label asp-for="AffectedTeams" class="col-md-2 control-label"></label>
+            <label asp-for="E.AffectedTeams" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="AffectedTeams" class="form-control" data-role="tagsinput" />
-                <span asp-validation-for="AffectedTeams" class="text-danger" />
+                <input asp-for="E.AffectedTeams" class="form-control" data-role="tagsinput" />
+                <span asp-validation-for="E.AffectedTeams" class="text-danger" />
             </div>
         </div>
 
         <div class="form-group">
-            <label asp-for="Category" class="col-md-2 control-label"  data-toggle="tooltip" data-placement="top" data-html="true" title="@Constants.TIP_CATEGORY"></label>
+            <label asp-for="E.Category" class="col-md-2 control-label" data-toggle="tooltip" data-placement="top" data-html="true" title="@Constants.TIP_CATEGORY"></label>
             <div class="col-md-4">
-                <input asp-for="Category" class="form-control" />
-                <span asp-validation-for="Category" class="text-danger" />
+                <input asp-for="E.Category" class="form-control" />
+                <span asp-validation-for="E.Category" class="text-danger" />
             </div>
-            <label asp-for="Environment" class="col-md-2 control-label"></label>
+            <label asp-for="E.Environment" class="col-md-2 control-label"></label>
             <div class="col-md-4">
-                <select asp-for="Environment" class="form-control">
+                <select asp-for="E.Environment" asp-items="Model.Environments" class="form-control">
                     <option></option>
-                    @foreach (var s in LOVs.ListEnvironments())
-                    {
-                        <option value=@s.Value>@s.Name</option>
-                    }
                 </select>
-                <span asp-validation-for="Environment" class="text-danger" />
+                <span asp-validation-for="E.Environment" class="text-danger" />
             </div>
         </div>
-        <div class="form-group">            
-            <label asp-for="ImpactAnalysis" class="col-md-2 control-label" data-toggle="tooltip" data-placement="top" data-html="true" title="@Constants.TIP_IMPACTANALYSIS"></label>
-            <div class="col-md-10">
-                <textarea rows="5" asp-for="ImpactAnalysis" class="form-control"></textarea>
-                <span asp-validation-for="ImpactAnalysis" class="text-danger" />
-            </div>
-        </div>
-
         <div class="form-group">
-            <label asp-for="MaintProcedure" class="col-md-2 control-label"  data-toggle="tooltip" data-placement="top" data-html="true" title="@Constants.TIP_ACTIONPLAN"></label>
+            <label asp-for="E.ImpactAnalysis" class="col-md-2 control-label" data-toggle="tooltip" data-placement="top" data-html="true" title="@Constants.TIP_IMPACTANALYSIS"></label>
             <div class="col-md-10">
-                <textarea rows="5" asp-for="MaintProcedure" class="form-control"></textarea>
-                <span asp-validation-for="MaintProcedure" class="text-danger" />
+                <textarea rows="5" asp-for="E.ImpactAnalysis" class="form-control"></textarea>
+                <span asp-validation-for="E.ImpactAnalysis" class="text-danger" />
             </div>
         </div>
 
         <div class="form-group">
-            <label asp-for="ActionBy" class="col-md-2 control-label"></label>
+            <label asp-for="E.MaintProcedure" class="col-md-2 control-label" data-toggle="tooltip" data-placement="top" data-html="true" title="@Constants.TIP_ACTIONPLAN"></label>
             <div class="col-md-10">
-                <input asp-for="ActionBy" class="form-control" data-role="tagsinput"/>
-                <span asp-validation-for="ActionBy" class="text-danger" />
-            </div>
-        </div>    
-
-        <div class="form-group">
-            <label asp-for="VerificationStep" class="col-md-2 control-label" data-toggle="tooltip" data-placement="top" data-html="true" title="@Constants.TIP_VERIFICATIONSTEPS"></label>
-            <div class="col-md-10">
-                <textarea rows="5" asp-for="VerificationStep" class="form-control"></textarea>
-                <span asp-validation-for="VerificationStep" class="text-danger" />
+                <textarea rows="5" asp-for="E.MaintProcedure" class="form-control"></textarea>
+                <span asp-validation-for="E.MaintProcedure" class="text-danger" />
             </div>
         </div>
 
         <div class="form-group">
-            <label asp-for="HealthCheckBy" class="col-md-2 control-label"></label>
+            <label asp-for="E.ActionBy" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="HealthCheckBy" class="form-control" data-role="tagsinput" />
-                <span asp-validation-for="HealthCheckBy" class="text-danger" />
-            </div>
-        </div>          
-
-        <div class="form-group">
-            <label asp-for="FallbackProcedure" class="col-md-2 control-label" data-toggle="tooltip" data-placement="top" data-html="true" title="@Constants.TIP_FALLBACKPROC"></label>
-            <div class="col-md-10">
-                <textarea rows="5" asp-for="FallbackProcedure" class="form-control"></textarea>
-                <span asp-validation-for="FallbackProcedure" class="text-danger" />
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="Result" class="col-md-2 control-label"  data-toggle="tooltip" data-placement="top" data-html="true" title="@Constants.TIP_RESULTS"></label>
-            <div class="col-md-10">
-                <input asp-for="Result" class="form-control" />
-                <span asp-validation-for="Result" class="text-danger" />
+                <input asp-for="E.ActionBy" class="form-control" data-role="tagsinput" />
+                <span asp-validation-for="E.ActionBy" class="text-danger" />
             </div>
         </div>
 
         <div class="form-group">
-            <label asp-for="Likelihood" class="col-md-2 control-label" data-toggle="tooltip" data-placement="top" data-html="true" title="@Constants.TIP_LIKELIHOOD"></label>
+            <label asp-for="E.VerificationStep" class="col-md-2 control-label" data-toggle="tooltip" data-placement="top" data-html="true" title="@Constants.TIP_VERIFICATIONSTEPS"></label>
+            <div class="col-md-10">
+                <textarea rows="5" asp-for="E.VerificationStep" class="form-control"></textarea>
+                <span asp-validation-for="E.VerificationStep" class="text-danger" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="E.HealthCheckBy" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="E.HealthCheckBy" class="form-control" data-role="tagsinput" />
+                <span asp-validation-for="E.HealthCheckBy" class="text-danger" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="E.FallbackProcedure" class="col-md-2 control-label" data-toggle="tooltip" data-placement="top" data-html="true" title="@Constants.TIP_FALLBACKPROC"></label>
+            <div class="col-md-10">
+                <textarea rows="5" asp-for="E.FallbackProcedure" class="form-control"></textarea>
+                <span asp-validation-for="E.FallbackProcedure" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="E.Result" class="col-md-2 control-label" data-toggle="tooltip" data-placement="top" data-html="true" title="@Constants.TIP_RESULTS"></label>
+            <div class="col-md-10">
+                <input asp-for="E.Result" class="form-control" />
+                <span asp-validation-for="E.Result" class="text-danger" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="E.Likelihood" class="col-md-2 control-label" data-toggle="tooltip" data-placement="top" data-html="true" title="@Constants.TIP_LIKELIHOOD"></label>
             <div class="col-md-4">
-                <select asp-for="Likelihood" class="form-control">
+                <select asp-for="E.Likelihood" asp-items="Model.Likelihoods" class="form-control">
                     <option></option>
-                    @foreach (var s in LOVs.ListLikelihoods())
-                    {
-                        <option value=@s.Value>@s.Name</option>
-                    }
                 </select>
-                <span asp-validation-for="Likelihood" class="text-danger" />
+                <span asp-validation-for="E.Likelihood" class="text-danger" />
             </div>
-            <label asp-for="Impact" class="col-md-2 control-label" data-toggle="tooltip" data-placement="top" data-html="true" title="@Constants.TIP_IMPACT"></label>
+            <label asp-for="E.Impact" class="col-md-2 control-label" data-toggle="tooltip" data-placement="top" data-html="true" title="@Constants.TIP_IMPACT"></label>
             <div class="col-md-4">
-                <select asp-for="Impact" class="form-control">
+                <select asp-for="E.Impact" asp-items="Model.Impacts" class="form-control">
                     <option></option>
-                    @foreach (var s in LOVs.ListImpacts())
-                    {
-                        <option value=@s.Value>@s.Name</option>
-                    }
                 </select>
-                <span asp-validation-for="Impact" class="text-danger" />
+                <span asp-validation-for="E.Impact" class="text-danger" />
             </div>
         </div>
 
         <div class="form-group" hidden>
-            <label asp-for="RiskLevel" class="col-md-2 control-label"></label>
+            <label asp-for="E.RiskLevel" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <select asp-for="RiskLevel" class="form-control chosen-disabled">
+                <select asp-for="E.RiskLevel" asp-items="Model.RiskLevels" class="form-control chosen-disabled">
                     <option></option>
-                    @foreach (var s in LOVs.ListRiskLevels())
-                    {
-                        <option value=@s.Value>@s.Name</option>
-                    }
                 </select>
-                <span asp-validation-for="RiskLevel" class="text-danger" />
+                <span asp-validation-for="E.RiskLevel" class="text-danger" />
             </div>
         </div>
 
         @*This is a readonly makeup field. *@
         <div class="form-group">
-            <label asp-for="RiskLevel" class="col-md-2 control-label" data-toggle="tooltip" data-placement="top" data-html="true" title="@Constants.TIP_RISKLEVEL"></label>
+            <label asp-for="E.RiskLevel" class="col-md-2 control-label" data-toggle="tooltip" data-placement="top" data-html="true" title="@Constants.TIP_RISKLEVEL"></label>
             <div class="col-md-10">
                 <span class="form-control" id="RiskLevelDisplay">
                 </span>
@@ -250,10 +234,10 @@
         </div>
 
         <div class="form-group">
-            <label asp-for="RiskAnalysis" class="col-md-2 control-label" data-toggle="tooltip" data-placement="top" data-html="true" title="@Constants.TIP_RISKANALYSIS"></label>
+            <label asp-for="E.RiskAnalysis" class="col-md-2 control-label" data-toggle="tooltip" data-placement="top" data-html="true" title="@Constants.TIP_RISKANALYSIS"></label>
             <div class="col-md-10">
-                <textarea rows="5" asp-for="RiskAnalysis" class="form-control"></textarea>
-                <span asp-validation-for="RiskAnalysis" class="text-danger" />
+                <textarea rows="5" asp-for="E.RiskAnalysis" class="form-control"></textarea>
+                <span asp-validation-for="E.RiskAnalysis" class="text-danger" />
             </div>
         </div>
 
@@ -267,7 +251,7 @@
 </form>
 
 <div>
-    
+
     @if (@ViewBag.Redir != null)
     {
         <a href="@Uri.UnescapeDataString(ViewBag.Redir)">Back</a>
@@ -287,7 +271,7 @@
 
     /* prevent submit form by hitting Enter */
     $(document).ready(function() {
-        $(window).keydown(function(event){            
+        $(window).keydown(function(event){
             if(event.keyCode == 13 && event.target.type != "textarea") {
                 event.preventDefault();
                 return false;
@@ -297,8 +281,8 @@
     });
 
     /* Please refer to event.js for the actual implementation. */
-    var riskmatrix = @Html.Raw(Json.Serialize(LOVs.RiskLevelMatrix));
-    
+    var riskmatrix = @Html.Raw(Json.Serialize(Model.RiskLevelMatrix));
+
     /* We need to workout the RiskLevel When Likelihood or Impact chnages. */
     $('#Likelihood').on('change', UpdateRiskLevelWrapper);
     $('#Impact').on('change', UpdateRiskLevelWrapper);
@@ -309,7 +293,7 @@
     });
 
     /* JSON.parse doesn't work. Just use the for loop instead. */
-    var p = @Html.Raw(Json.Serialize(Projects.ListAll()));
+    var p = @Html.Raw(Json.Serialize(Model.Projects.ToList()));
     var projects = [];
 
     for (i = 0; i < p.length; i++) {
@@ -337,7 +321,7 @@
     });
 
     /* JSON.parse doesn't work. Just use the for loop instead. */
-    var t = @Html.Raw(Json.Serialize(Teams.ListAll()));
+    var t = @Html.Raw(Json.Serialize(Model.Teams.ToList()));
     var teams = [];
 
     for (i = 0; i < t.length; i++) {

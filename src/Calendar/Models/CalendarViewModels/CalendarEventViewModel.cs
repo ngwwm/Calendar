@@ -60,12 +60,12 @@ namespace Calendar.Models.CalendarViewModels
             NextEventID = 0;
 
             // Lookup those Names by Values, such as RiskLevel, EventStatus, etc.
-            StaticListOfValuesService LOVs = new StaticListOfValuesService();
+            //StaticListOfValuesService LOVs = StaticListOfValuesService;
 
 
-            var es = LOVs.ListEventStatus().Where(m => m.Value == e.EventStatus);
+            var es = StaticListOfValuesService.ListEventStatus().Where(m => m.Value == e.EventStatus);
             if (es.Count() == 1) { this.EventStatus = es.First().Name; } else { this.EventStatus = e.EventStatus; }
-            var rl = LOVs.ListRiskLevels().Where(m => m.Value == e.RiskLevel);
+            var rl = StaticListOfValuesService.ListRiskLevels().Where(m => m.Value == e.RiskLevel);
             if (rl.Count() == 1) { this.RiskLevel = rl.First().Name; } else { this.RiskLevel = e.RiskLevel; }
         }
     }

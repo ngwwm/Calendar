@@ -124,7 +124,7 @@ namespace Calendar
             /* Statistics on Events by Team/Project used in the navigation menu in LHS. */
             services.AddTransient<Calendar.Models.Services.EventStatisticsService>();     
             /* Provides LOV/constants type of things */  
-            services.AddTransient<Calendar.Models.Services.StaticListOfValuesService>();
+            //services.AddTransient<Calendar.Models.Services.StaticListOfValuesService>();
             /* Expose the Project List */
             services.AddTransient<Calendar.Controllers.ProjectsController>();
             /* Expose the Team List */

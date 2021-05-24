@@ -34,8 +34,8 @@ namespace Calendar.Controllers
         // GET: Teams/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (!User.IsInRole(Constants.ROLE_ADMIN))
-                return NotFound();
+            //if (!User.IsInRole(Constants.ROLE_ADMIN))
+            //    return NotFound();
 
             if (id == null)
             {

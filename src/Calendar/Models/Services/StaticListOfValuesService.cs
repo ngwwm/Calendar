@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Calendar.Helpers;
+using System.Collections;
 
 /* All the static List of Values will be provied by this Services */
 namespace Calendar.Models.Services
@@ -29,7 +30,7 @@ namespace Calendar.Models.Services
         }
     }
 
-    public class StaticListOfValuesService
+    public static class StaticListOfValuesService
     {
         const string RISK_VERYLOW  = "1";
         const string RISK_LOW      = "2";
@@ -37,7 +38,7 @@ namespace Calendar.Models.Services
         const string RISK_HIGH     = "4";
         const string RISK_CRITICAL = "5";
 
-        public List<LOV> ListSeverities()
+        public static List<LOV> ListSeverities()
         {
             return new List<LOV>()
             {
@@ -47,12 +48,12 @@ namespace Calendar.Models.Services
             };
         }
 
-        public List<string> ListColors()
+        public static List<string> ListColors()
         {
             return new List<string>() { "Blue", "Green", "Red", "Yellow" };
         }
 
-        public List<LOV> ListEnvironments()
+        public static List<LOV> ListEnvironments()
         {
             return new List<LOV>()
             {
@@ -60,7 +61,7 @@ namespace Calendar.Models.Services
             };
         }
 
-        public List<LOV> ListLikelihoods()
+        public static List<LOV> ListLikelihoods()
         {
             return new List<LOV>()
             {
@@ -72,7 +73,7 @@ namespace Calendar.Models.Services
             };
         }
 
-        public List<LOV> ListImpacts()
+        public static List<LOV> ListImpacts()
         {
             return new List<LOV>()
             {
@@ -84,7 +85,7 @@ namespace Calendar.Models.Services
             };
         }
 
-        public List<LOV> ListRiskLevels()
+        public static List<LOV> ListRiskLevels()
         {
             return new List<LOV>()
             {
@@ -96,7 +97,7 @@ namespace Calendar.Models.Services
             };
         }
 
-        public string[,] RiskLevelMatrix = 
+        public static string[,] RiskLevelMatrix = 
                 new string[5,5] {{RISK_VERYLOW, RISK_VERYLOW, RISK_LOW, RISK_LOW, RISK_MODERATE,},
                                  {RISK_VERYLOW, RISK_LOW, RISK_MODERATE, RISK_MODERATE, RISK_MODERATE,},                    
                                  {RISK_LOW, RISK_MODERATE, RISK_MODERATE, RISK_MODERATE, RISK_HIGH,},
@@ -104,7 +105,7 @@ namespace Calendar.Models.Services
                                  {RISK_MODERATE, RISK_MODERATE, RISK_HIGH, RISK_CRITICAL, RISK_CRITICAL,}
                                  };
 
-        public List<LOV> ListEventStatus()
+        public static List<LOV> ListEventStatus()
         {
             return new List<LOV>()
             {
@@ -116,7 +117,7 @@ namespace Calendar.Models.Services
                 new LOV("EventStatus", "Tentative", Constants.STATUS_TENTATIVE)                
             };
         }
-        public List<LOV> ListSearchDate()
+        public static List<LOV> ListSearchDate()
         {
             return new List<LOV>()
             {
@@ -126,7 +127,7 @@ namespace Calendar.Models.Services
                 new LOV("SearchDate", "Update Date", "UD")
             };
         }
-        public List<LOV> ListSearchRange()
+        public static List<LOV> ListSearchRange()
         {
             return new List<LOV>()
             {
